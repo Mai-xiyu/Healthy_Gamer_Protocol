@@ -13,7 +13,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 import org.xiyu.healthygamer.init.ItemInit;
 
-// 核心注解：告诉 Forge 这是个模组
 @Mod(HealthyGamerMod.MODID)
 public class HealthyGamerMod {
     public static final String MODID = "healthy_gamer";
@@ -22,7 +21,6 @@ public class HealthyGamerMod {
     public HealthyGamerMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // ✅ 新增：注册物品
         ItemInit.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
