@@ -21,15 +21,13 @@ public class TimeUpScreen extends Screen {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
 
-        // 绘制大红字
         graphics.drawCenteredString(this.font, "§l§c⚠ 您的游戏时间已结束 ⚠", centerX, centerY - 20, 0xFF0000);
         graphics.drawCenteredString(this.font, reason, centerX, centerY + 10, 0xFFFFFF);
         graphics.drawCenteredString(this.font, "为了您的身心健康，请按 ALT+F4 强制休息", centerX, centerY + 40, 0xAAAAAA);
     }
 
-    // 🔥 禁止一切操作
     @Override
     public boolean shouldCloseOnEsc() { return false; }
     @Override
-    public boolean isPauseScreen() { return true; } // 暂停游戏，防止被打死
+    public boolean isPauseScreen() { return true; }
 }

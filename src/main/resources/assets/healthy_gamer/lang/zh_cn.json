@@ -1,0 +1,11 @@
+{
+  "item.healthy_gamer.grandpa_id_card": "爷爷的身份证",
+  "itemGroup.healthy_gamer": "健康游戏助手",
+
+  "gui.healthy_gamer.auth_title": "中国游戏防沉迷实名认证",
+  "gui.healthy_gamer.verify_title": "人脸识别抽查",
+
+  "message.healthy_gamer.check_fail": "§c[人脸识别失败] 检测到非活体操作，已强制下线！",
+  "message.healthy_gamer.check_pass": "§a[系统] 活体检测通过。请继续游戏。",
+  "message.healthy_gamer.warning_speed": "§c[警告] 系统检测到您的反应速度远超 75 岁用户平均水平！"
+}

@@ -28,12 +28,11 @@ public class ClientEventHandler {
     private static long lastTickTime = 0;
     private static int saveTicker = 0;
 
-    // --- 👴 老年人行为监测变量 ---
-    private static int clickCounter = 0;          // 记录点击次数
-    private static float rotationDeltaSum = 0;    // 记录视角转动幅度累计
+    private static int clickCounter = 0;
+    private static float rotationDeltaSum = 0;
     private static float lastYaw = 0;
     private static float lastPitch = 0;
-    private static long monitorStartTime = 0;     // 监测周期开始时间
+    private static long monitorStartTime = 0;
 
     public static void generateNextCheckTime() {
         long minDelay = 10 * 60 * 1000;
@@ -53,8 +52,6 @@ public class ClientEventHandler {
     public static void onPlayerLogin(ClientPlayerNetworkEvent.LoggingIn event) {
         ClientData.load();
         lastTickTime = System.currentTimeMillis();
-
-        // 重置监测数据
         clickCounter = 0;
         rotationDeltaSum = 0;
         monitorStartTime = System.currentTimeMillis();
@@ -79,10 +76,8 @@ public class ClientEventHandler {
         ClientData.save();
     }
 
-    // 🔥 新增：监听鼠标点击 (计算手速)
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseButton.Pre event) {
-        // action 1 = 按下, button 0 = 左键, 1 = 右键
         if (event.getAction() == 1) {
             clickCounter++;
         }
@@ -96,22 +91,18 @@ public class ClientEventHandler {
 
         long now = System.currentTimeMillis();
 
-        // 1. 时间累加
         if (lastTickTime != 0 && ClientData.INSTANCE.isVerified) {
             ClientData.INSTANCE.dailyPlayedTime += (now - lastTickTime);
         }
         lastTickTime = now;
 
-        // 2. 自动保存
         saveTicker++;
         if (saveTicker >= 200) {
             ClientData.save();
             saveTicker = 0;
         }
 
-        // 3. --- 👴 核心逻辑：操作强度检测 ---
         if (ClientData.INSTANCE.isUsingFakeId && mc.screen == null) {
-            // 计算视角的瞬间变化量 (简单防抖)
             float currentYaw = mc.player.getYRot();
             float currentPitch = mc.player.getXRot();
             float delta = Math.abs(currentYaw - lastYaw) + Math.abs(currentPitch - lastPitch);
@@ -120,34 +111,25 @@ public class ClientEventHandler {
             lastYaw = currentYaw;
             lastPitch = currentPitch;
 
-            // 每 5 秒结算一次
             if (now - monitorStartTime > 5000) {
-                // 判定标准：
-                // 1. 5秒内点击超过 35 次 (平均 7 CPS) -> 只有年轻人手速这么快
-                // 2. 5秒内视角转动累计超过 1500 度 -> 疯狂甩头/转圈
                 boolean tooFastClicks = clickCounter > 35;
                 boolean tooFastRotation = rotationDeltaSum > 1500;
 
                 if (tooFastClicks || tooFastRotation) {
-                    // 只有当下次检查时间还很远(>5秒)的时候，才触发惩罚
                     if (ClientData.INSTANCE.nextFaceCheckTime - now > 5000) {
                         mc.player.sendSystemMessage(Component.literal("§c[警告] 系统检测到您的反应速度远超 75 岁用户平均水平！"));
                         mc.player.sendSystemMessage(Component.literal("§e[大数据] 正在重新评估您的身份信息..."));
-
-                        // 惩罚：3秒后立刻触发人脸识别
                         ClientData.INSTANCE.nextFaceCheckTime = now + 3000;
                         ClientData.save();
                     }
                 }
 
-                // 重置计数器进入下一个周期
                 clickCounter = 0;
                 rotationDeltaSum = 0;
                 monitorStartTime = now;
             }
         }
 
-        // --- 阶段一：实名认证 ---
         if (!ClientData.INSTANCE.isVerified) {
             if (!(mc.screen instanceof AuthScreen)) {
                 mc.setScreen(new AuthScreen());
@@ -155,7 +137,6 @@ public class ClientEventHandler {
             return;
         }
 
-        // --- 阶段二：防沉迷 (未成年) ---
         if (!ClientData.INSTANCE.isAdult) {
             LocalTime localTime = LocalTime.now();
             boolean isCurfew = localTime.getHour() >= 22 || localTime.getHour() < 8;
@@ -169,7 +150,6 @@ public class ClientEventHandler {
             }
         }
 
-        // --- 阶段三：人脸识别抽查 ---
         if (ClientData.INSTANCE.isUsingFakeId) {
             if (mc.screen == null && now > ClientData.INSTANCE.nextFaceCheckTime) {
                 // 安全冷却 60 秒

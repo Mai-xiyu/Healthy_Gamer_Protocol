@@ -10,14 +10,13 @@ import java.nio.charset.StandardCharsets;
 
 public class IpUtils {
 
-    // 免费 API，指定语言为中文 (lang=zh-CN)
     private static final String API_URL = "http://ip-api.com/json/?lang=zh-CN";
 
     public static class IpResult {
         public boolean success;
-        public String countryCode; // CN, US, JP...
-        public String regionName;  // 北京市, 广东省...
-        public String message;     // 错误信息
+        public String countryCode;
+        public String regionName;
+        public String message;
 
         public IpResult(boolean success, String countryCode, String regionName) {
             this.success = success;
@@ -40,8 +39,8 @@ public class IpUtils {
             URL url = new URL(API_URL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setConnectTimeout(3000); // 3秒超时
-            conn.setReadTimeout(3000);
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
             conn.setRequestProperty("User-Agent", "Minecraft-HealthyGamer-Mod");
 
             int code = conn.getResponseCode();
@@ -56,15 +55,13 @@ public class IpUtils {
                 response.append(line);
             }
             reader.close();
-
-            // 解析 JSON
             JsonObject json = JsonParser.parseString(response.toString()).getAsJsonObject();
             if (!"success".equals(json.get("status").getAsString())) {
                 return IpResult.error("API查询失败");
             }
 
-            String country = json.get("countryCode").getAsString(); // CN
-            String region = json.get("regionName").getAsString();   // 广东
+            String country = json.get("countryCode").getAsString();
+            String region = json.get("regionName").getAsString();
 
             return new IpResult(true, country, region);
 

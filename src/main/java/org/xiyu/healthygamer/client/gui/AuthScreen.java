@@ -29,28 +29,22 @@ public class AuthScreen extends Screen {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
 
-        // 1. 姓名输入框
-        // 调整位置：y - 60
         this.nameInput = new EditBox(this.font, centerX - 100, centerY - 60, 200, 20, Component.literal("姓名"));
         this.nameInput.setMaxLength(10);
-        this.nameInput.setHint(Component.literal("请输入真实姓名")); // ✅ 灰色提示文字
+        this.nameInput.setHint(Component.literal("请输入真实姓名"));
         this.addRenderableWidget(this.nameInput);
 
-        // 2. 身份证输入框
-        // 调整位置：y - 10
         this.idInput = new EditBox(this.font, centerX - 100, centerY - 10, 200, 20, Component.literal("身份证号"));
         this.idInput.setMaxLength(18);
-        this.idInput.setHint(Component.literal("请输入18位身份证号")); // ✅ 灰色提示文字
+        this.idInput.setHint(Component.literal("请输入18位身份证号"));
         this.addRenderableWidget(this.idInput);
 
-        // 3. 认证按钮
         this.verifyButton = Button.builder(Component.literal("立即认证"), (btn) -> {
             startVerification();
         }).bounds(centerX - 50, centerY + 30, 100, 20).build();
 
         this.addRenderableWidget(this.verifyButton);
 
-        // 4. 检测爷爷的身份证
         boolean hasCard = false;
         if (this.minecraft != null && this.minecraft.player != null) {
             for (ItemStack stack : this.minecraft.player.getInventory().items) {
@@ -144,14 +138,11 @@ public class AuthScreen extends Screen {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
 
-        // 绘制大标题
         graphics.drawCenteredString(this.font, "§l中国游戏防沉迷实名认证", centerX, centerY - 100, 0xFFFFFF);
 
-        // ✅ 新增：在输入框上方绘制文字标签，让玩家知道填什么
         graphics.drawString(this.font, "真实姓名：", centerX - 100, centerY - 72, 0xA0A0A0, true);
         graphics.drawString(this.font, "身份证号：", centerX - 100, centerY - 22, 0xA0A0A0, true);
 
-        // ✅ 修复：错误信息下移，防止遮挡按钮
         if (errorMessage != null) {
             graphics.drawCenteredString(this.font, errorMessage, centerX, centerY + 95, 0xFF0000);
         }

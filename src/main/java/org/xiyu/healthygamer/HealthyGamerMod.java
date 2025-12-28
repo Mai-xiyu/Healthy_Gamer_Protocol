@@ -30,26 +30,19 @@ public class HealthyGamerMod {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        LOGGER.info("防沉迷系统核心已启动... 正在连接公安部数据库(伪)...");
     }
 
-    // 服务端事件：当服务器启动时
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        LOGGER.info("服务器已启动，宵禁逻辑准备就绪。");
     }
 
-    // 客户端专用事件总线 (处理 GUI 和按键拦截)
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            LOGGER.info("客户端防沉迷模块初始化...");
-            // 这里以后注册你的 GUI 覆盖层 (HUD)
         }
         @SubscribeEvent
         public static void registerOverlays(net.minecraftforge.client.event.RegisterGuiOverlaysEvent event) {
-            // 注册名为 "time_limit_hud" 的覆盖层
             event.registerAboveAll("time_limit_hud", new org.xiyu.healthygamer.client.gui.TimeLimitHud());
         }
     }
